@@ -1,103 +1,141 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SmartHelp - Abrir Ticket</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartHelp – Abrir Ticket</title>
 
-  <!-- Liga o CSS corretamente -->
-  <link rel="stylesheet" href="styles.css">
+  <!-- Estilo Global -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ESTILO EXCLUSIVO DO FORMULÁRIO DO INDEX */
+
+    .form-wrapper {
+      background: var(--bg-card);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+      max-width: 800px;
+      margin: 50px auto;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--blue);
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-bottom: 35px;
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    textarea {
+      height: 200px !important;
+      line-height: 1.5;
+      padding: 16px;
+    }
+
+    button {
+      margin-top: 35px;
+      font-size: 18px;
+      padding: 18px;
+    }
+  </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>📨 Abrir Ticket de Suporte</h1>
-    <p class="subtitle">Preencha os dados abaixo para criar um ticket</p>
+<div class="form-wrapper">
+  <h1>📨 Abrir Ticket de Suporte</h1>
+  <p class="subtitle">Explique-nos o problema com detalhe para podermos ajudar rapidamente</p>
 
-    <form id="ticketForm">
+  <form id="ticketForm">
 
-      <label>Nome</label>
-      <input type="text" id="nome" placeholder="O seu nome" required>
+    <label>Nome</label>
+    <input type="text" id="nome" placeholder="O seu nome completo" required>
 
-      <label>Email</label>
-      <input type="email" id="email" placeholder="O seu email" required>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="exemplo@empresa.com" required>
 
-      <label>Telefone</label>
-      <input type="text" id="telefone" placeholder="Contacto (opcional)">
+    <label>Telefone</label>
+    <input type="text" id="telefone" placeholder="Contacto (opcional)">
 
-      <label>Categoria</label>
-      <select id="categoria" required>
-        <option value="">Selecione...</option>
-        <option>Erro técnico</option>
-        <option>Pedido administrativo</option>
-        <option>Falha de equipamento</option>
-        <option>Outro</option>
-      </select>
+    <label>Tipo de Pedido</label>
+    <select id="categoria" required>
+      <option value="">Selecione...</option>
+      <option>Erro técnico</option>
+      <option>Pedido administrativo</option>
+      <option>Falha de equipamento</option>
+      <option>Outro</option>
+    </select>
 
-      <label>Prioridade</label>
-      <select id="prioridade" required>
-        <option value="">Selecione...</option>
-        <option>Baixa</option>
-        <option>Média</option>
-        <option>Alta</option>
-        <option>Urgente</option>
-      </select>
+    <label>Prioridade</label>
+    <select id="prioridade" required>
+      <option value="">Selecione...</option>
+      <option>Baixa</option>
+      <option>Média</option>
+      <option>Alta</option>
+      <option>Urgente</option>
+    </select>
 
-      <label>Descrição</label>
-      <textarea id="descricao" placeholder="Descreva o problema" required></textarea>
+    <label>Descrição do Problema</label>
+    <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe possível.
+Exemplos:
+• O computador não liga
+• A impressora não imprime
+• Não consigo aceder ao email
+• Internet lenta ou sem ligação" required></textarea>
 
-      <button type="submit">Enviar Ticket</button>
+    <button type="submit">Enviar Ticket</button>
+  </form>
+</div>
 
-    </form>
-  </div>
+<!-- Firebase + Envio do Formulário -->
+<script type="module">
+  import { firebaseConfig } from "./firebase.js";
 
-  <!-- Script Firebase + Firestore -->
-  <script type="module">
-    import { firebaseConfig } from "./firebase.js";
+  import { 
+    initializeApp 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
-    import { initializeApp } 
-      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, getDocs
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    import { 
-      getFirestore, collection, addDoc, getDocs 
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  document.getElementById("ticketForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    // Envio do formulário
-    document.getElementById("ticketForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const snap = await getDocs(collection(db, "tickets"));
+    const total = snap.size + 1;
+    const ticketID = "TCK-" + String(total).padStart(4, "0");
 
-      // Contar tickets existentes
-      const snap = await getDocs(collection(db, "tickets"));
-      const total = snap.size + 1;
-
-      // Criar ID automático
-      const ticketID = "TCK-" + String(total).padStart(4, '0');
-
-      // Guardar ticket no Firestore
-      await addDoc(collection(db, "tickets"), {
-        id: ticketID,
-        nome: nome.value,
-        email: email.value,
-        telefone: telefone.value,
-        categoria: categoria.value,
-        prioridade: prioridade.value,
-        descricao: descricao.value,
-        estado: "Aberto",
-        data: new Date()
-      });
-
-      alert("Ticket enviado com sucesso!\nO seu ID é: " + ticketID);
-
-      document.getElementById("ticketForm").reset();
+    await addDoc(collection(db, "tickets"), {
+      id: ticketID,
+      nome: nome.value,
+      email: email.value,
+      telefone: telefone.value,
+      categoria: categoria.value,
+      prioridade: prioridade.value,
+      descricao: descricao.value,
+      estado: "Aberto",
+      data: new Date()
     });
 
-  </script>
+    alert("✅ Ticket enviado com sucesso!\n\nID do Ticket: " + ticketID);
+
+    document.getElementById("ticketForm").reset();
+  });
+</script>
 
 </body>
 </html>
-
