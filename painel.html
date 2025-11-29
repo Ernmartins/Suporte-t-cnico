@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Técnico – SmartHelp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<header>📋 Painel do Técnico</header>
+
+<div class="container">
+  <table id="lista">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Categoria</th>
+        <th>Prioridade</th>
+        <th>Estado</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script type="module">
+  import { firebaseConfig } from "./firebase.js";
+
+  import { 
+    initializeApp 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+  import { 
+    getFirestore, collection, getDocs, updateDoc, doc 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function carregar() {
+    const snap = await getDocs(collection(db, "tickets"));
+    let html = "";
+
+    snap.forEach(d => {
+      const t = d.data();
+      html += `
+        <tr>
+          <td>${t.id}</td>
+          <td>${t.nome}</td>
+          <td>${t.categoria}</td>
+          <td>${t.prioridade}</td>
+          <td>${t.estado}</td>
+          <td>
+            <button onclick="mudarEstado('${d.id}', 'Resolvido')">Resolvido</button>
+            <button onclick="mudarEstado('${d.id}', 'Em andamento')">Em andamento</button>
+          </td>
+        </tr>`;
+    });
+
+    document.querySelector("#lista tbody").innerHTML = html;
+  }
+
+  window.mudarEstado = async function (id, novoEstado) {
+    await updateDoc(doc(db, "tickets", id), { estado: novoEstado });
+    carregar();
+  }
+
+  carregar();
+</script>
+
+</body>
+</html>
