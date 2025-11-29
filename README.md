@@ -211,22 +211,30 @@ O sistema entrega:
 ✔ Base de dados sempre sincronizada
 ✔ Interface moderna e intuitiva
 
-Pontos de melhoria:
+Links do Teu Sistema SmartHelp
+1️⃣ Página principal — Criar Ticket (CLIENTE)
 
-Sistema de notificações por email
+📌 URL:
+👉 https://ernmartins.github.io/suporte-tecnico/
 
-Comentários técnico-cliente
+2️⃣ Painel Técnico — Ver todos os tickets (ADMIN)
 
-Exportação de relatórios PDF
+📌 URL:
+👉 https://ernmartins.github.io/suporte-tecnico/admin.html
 
-⭐ Autoavaliação
-Aspeto	Nota
-Organização	⭐⭐⭐⭐⭐
-Criatividade	⭐⭐⭐⭐⭐
-Código	⭐⭐⭐⭐
-Aprendizagem	⭐⭐⭐⭐⭐
-Documentação	⭐⭐⭐⭐⭐
-📄 Licença
+3️⃣ Página para Consultar Ticket pelo ID (CLIENTE)
 
-Uso académico.
-Não utilizar comercialmente sem autorização.
+📌 URL:
+👉 https://ernmartins.github.io/suporte-tecnico/consultar-ticket.html
+
+4️⃣ Dashboard com Gráficos (ADMIN)
+
+📌 URL:
+👉 https://ernmartins.github.io/suporte-tecnico/dashboard.html
+
+5️⃣ Ficheiro Firebase (não é aberto pelo navegador, mas usado pelo sistema)
+
+📌 URL:
+👉 https://ernmartins.github.io/suporte-tecnico/firebase.js
+
+(apenas para verificar se está publicado)
