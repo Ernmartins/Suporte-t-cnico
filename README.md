@@ -1,212 +1,232 @@
-martHelp – Sistema Inteligente de Tickets de Suporte Técnico
+SmartHelp – Sistema Inteligente de Tickets de Suporte Técnico
 
-SmartHelp é um sistema web simples, moderno e eficiente para gestão de pedidos de suporte técnico (Helpdesk).
-Foi desenvolvido como projeto final do curso de Técnico de Helpdesk, com foco em:
+Projeto Final – Curso de Técnico de Helpdesk
+Plataforma web moderna para abertura, gestão e monitorização de tickets com:
+✔ Firebase Firestore
+✔ Firebase Authentication
+✔ Firebase Storage
+✔ Dashboard com gráficos
+✔ Login técnico
+✔ Consulta de estado do ticket
 
-✔ Receção de tickets
-✔ Gestão técnica dos pedidos
-✔ Visualização e organização
-✔ Base de dados em tempo real
-✔ Interface moderna e responsiva
+🚀 Funcionalidades Principais
+👤 1. Portal do Cliente
 
-O sistema funciona totalmente online usando HTML + CSS + Firebase Firestore.
+Enviar tickets de suporte técnico
 
-🚀 Funcionalidades
-👤 Portal do Cliente
+ID automático no formato TCK-0001
 
-Envio de novos tickets
+Campos: nome, email, telefone, categoria, prioridade, descrição
 
-Campos: Nome, Email, Telefone, Categoria, Prioridade e Descrição
+Maior área para descrição detalhada
 
-Interface limpa, moderna e responsiva
+Interface moderna (tema dark)
 
-Dados gravados automaticamente no Firebase
+Suporte a anexos (imagens, PDFs)
 
-Mensagem de confirmação após envio
+🔐 2. Login Técnico (Firebase Auth)
 
-👨‍🔧 Painel do Técnico (Admin)
+Página exclusiva de login (login.html)
 
-Listagem de todos os tickets submetidos
+Acesso seguro com email + password
 
-Visualização de categorias, prioridades e estado
+Sessão persistente
 
-Atualização em tempo real (Firestore)
+Após login → redireciona para painel do técnico
 
-Interface limpa estilo dashboard
+Logout disponível a qualquer momento
 
-🔍 (Opcional) Página de Consulta de Ticket por ID
+🧑‍🔧 3. Painel do Técnico (Admin)
 
-Permite ao cliente introduzir o ID e consultar:
+Listagem de todos os tickets
 
-Estado do ticket
+Cores diferentes conforme estado: Aberto, Em andamento, Resolvido
+
+Filtros por categoria e prioridade
+
+Atualizar estado do ticket (dropdown)
+
+Registar ações internas (notas técnicas)
+
+Ver anexos enviados pelo cliente
+
+Botão de Logout
+
+📊 4. Dashboard com Gráficos (Chart.js)
+
+Página dashboard.html inclui:
+
+Gráfico de tickets por estado
+
+Gráfico de tickets por categoria
+
+Gráfico de tickets por prioridade
+
+Atualização em tempo real (Firestore Listener)
+
+🔍 5. Página de Consulta de Ticket por ID
+
+(consultar-ticket.html)
+
+Cliente insere ID (ex.: TCK-0032)
+
+Sistema retorna:
+
+Estado
+
+Prioridade
 
 Categoria
 
-Técnico responsável
+Técnico responsável (opcional)
 
-Data de criação
+Data
 
-📊 (Opcional) Dashboard com Gráficos
+Descrição resumida
 
-Número de tickets por estado
+Indicador visual das fases (barra de progresso)
 
-Tickets por categoria
+📁 6. Upload de Ficheiros (Firebase Storage)
 
-Tickets por prioridade
+Agora o cliente pode anexar:
 
-Gráficos feitos com Chart.js
+Imagens
 
-🔐 Login Técnico (Opcional)
+PDFs
 
-Autenticação Firebase Authentication
+Prints de erros
 
-Entrada reservada ao painel admin
+No painel técnico o administrador pode:
 
-🛠️ Tecnologias Utilizadas
+Visualizar
 
-HTML5
+Fazer download
 
-CSS3 (design moderno)
+Apagar anexos
+
+🛠 Tecnologias Utilizadas
+
+HTML5 + CSS3 (tema dark profissional)
 
 JavaScript ES Modules
 
-Firebase 11 (App + Firestore Database)
+Firebase 11
 
-Chart.js (Dashboard Visual)
+Authentication
 
-GitHub Pages (Deployment)
+Firestore Database
+
+Storage
+
+Chart.js para gráficos
+
+GitHub Pages para publicação
 
 📂 Estrutura do Projeto
-smarthelp/
-│── index.html           → Portal para abrir ticket
-│── admin.html           → Painel de técnico
-│── consulta.html        → Consulta de ticket por ID (opcional)
-│── dashboard.html       → Gráficos (opcional)
-│── styles.css           → Design global
-│── /img                 → Logótipo / imagens (opcional)
-│── README.md            → Documento profissional do projeto
+suporte-tecnico/
+│
+├── index.html                (Portal Cliente – abrir ticket)
+├── login.html                (Login técnico)
+├── admin.html                (Painel técnico)
+├── atualizar-ticket.html     (Alterar estado do ticket)
+├── consultar-ticket.html     (Cliente consulta ticket)
+├── dashboard.html            (Gráficos)
+│
+├── firebase.js               (Configuração Firebase)
+├── auth.js                   (Lógica de login/logout)
+├── admin.js                  (Gestão de tickets)
+├── consulta.js               (Consultar ticket)
+├── dashboard.js              (Gráficos)
+│
+├── style.css                 (Tema dark global)
+│
+├── /uploads                  (Pasta local opcional)
+└── README.md                 (Documentação completa)
 
-📸 Screenshots
-
-(Adiciona aqui mais tarde prints dos teus ficheiros reais)
-
-Portal do Cliente
-
-Painel Técnico
-
-Dashboard (opcional)
-
-🔧 Como Instalar e Executar
+🔧 Como Instalar
 1️⃣ Clonar o repositório
-git clone https://github.com/teu-usuario/smarthelp.git
-cd smarthelp
+git clone https://github.com/teu-usuario/suporte-tecnico.git
+cd suporte-tecnico
 
-2️⃣ Configurar o Firebase
+2️⃣ Configurar Firebase
 
-Vai a:
-➡ https://console.firebase.google.com
+Ir a:
+👉 https://console.firebase.google.com
 
-Criar projeto → Firestore Database → Modo de teste
+Criar:
+✔ Projeto
+✔ Firestore
+✔ Authentication (Email/Password)
+✔ Storage
 
-Depois:
-Project Settings → Web App → Configuração
-E copiar o código parecido com este:
+Copiar o firebaseConfig e colar em firebase.js.
 
-const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "..."
-};
+3️⃣ Ativar Regras Temporárias
 
+Para testes iniciais:
 
-Colar este código no index.html, admin.html e outras páginas.
-
-3️⃣ Publicar no GitHub Pages
-
-No repositório:
-
-Settings → Pages → Branch: main → /root
-
-Depois acede ao link:
-
-👉 https://teu-usuario.github.io/smarthelp
-
-🤖 ID Automático no Firebase
-
-O Firestore gera automaticamente um ID único.
-Para apresentares um ID mais “humano” no ticket (como TCK-001), usa:
-
-const ticketID = "TCK-" + Date.now();
+allow read, write: if true;
 
 
-Guarda este ID junto com o documento.
+⚠️ Depois do projeto, mudar para regras seguras.
 
-🧪 Testes realizados
+🔑 Login Técnico – Como funciona
 
-Teste de envio de ticket
+Criar um utilizador manualmente no Firebase Auth
 
-Verificação de escrita na base de dados
+Entrar via página login.html
 
-Teste de carregamento no admin.html
+Se o login falhar → mensagem de erro
 
-Teste visual e de responsividade
+Se tiver sucesso → entra no painel (admin.html)
 
-(Opcional) Teste de login técnico
+Logout através do botão no header
 
-(Opcional) Teste de consulta por ID
+Redirecionamento automático caso o técnico não esteja autenticado
 
-📌 Dificuldades Encontradas (para o júri da escola)
+🧪 Testes Realizados
 
-Configuração inicial do Firebase
+Envio de ticket no portal cliente
 
-CORS ao tentar enviar dados através de API Google Apps Script
+Escrita e leitura Firestore
 
-Ajuste do design e responsividade
+Upload de ficheiros para Storage
 
-Ligação entre páginas e base de dados
+Atualização do estado
 
-Testar envio offline
+Autenticação técnico
+
+Consulta de ticket por ID
+
+Dashboard atualizado em tempo real
+
+Responsividade mobile
 
 🧠 Apreciação Crítica
 
-O sistema cumpre os objetivos principais:
-
-Simples para o cliente
-
-Eficiente para o técnico
-
-Visualmente profissional
-
-Funciona em qualquer dispositivo
+O sistema entrega:
+✔ Organização profissional
+✔ Experiência real de Helpdesk
+✔ Inteligência de estrutura
+✔ Base de dados sempre sincronizada
+✔ Interface moderna e intuitiva
 
 Pontos de melhoria:
 
-Autenticação técnica mais robusta
+Sistema de notificações por email
 
-Possibilidade de anexar ficheiros ao ticket
+Comentários técnico-cliente
 
-Adicionar sistema de comentários interno
+Exportação de relatórios PDF
 
 ⭐ Autoavaliação
-Aspeto	Avaliação
-Organização do projeto	⭐⭐⭐⭐⭐
+Aspeto	Nota
+Organização	⭐⭐⭐⭐⭐
 Criatividade	⭐⭐⭐⭐⭐
-Qualidade do código	⭐⭐⭐⭐
-Superação de dificuldades	⭐⭐⭐⭐⭐
+Código	⭐⭐⭐⭐
+Aprendizagem	⭐⭐⭐⭐⭐
 Documentação	⭐⭐⭐⭐⭐
-👨‍🏫 Nota para o Professor / Avaliadores
-
-Este projeto demonstra competências reais de um Técnico de Helpdesk moderno:
-✔ Registo estruturado de pedidos
-✔ Base de dados em nuvem
-✔ Automação
-✔ Interface profissional
-✔ Entrega organizada e documentada
-
 📄 Licença
 
-Projeto entregue exclusivamente para fins académicos.
-Proibida a utilização comercial sem autorização.
+Uso académico.
+Não utilizar comercialmente sem autorização.
