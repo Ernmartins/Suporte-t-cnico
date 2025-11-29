@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartHelp - Painel Técnico</title>
+  <title>Painel Técnico – SmartHelp</title>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>📋 SmartHelp - Gestão de Tickets</header>
+<header>📋 Painel do Técnico – Tickets Recebidos</header>
 
 <div class="container">
-  <h2>Tickets Recebidos</h2>
+  <h2>Lista de Tickets</h2>
 
-  <table>
+  <table id="tabelaTickets">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Nome</th>
         <th>Categoria</th>
         <th>Prioridade</th>
@@ -25,55 +26,55 @@
         <th>Descrição</th>
       </tr>
     </thead>
-    <tbody id="ticketList"></tbody>
+    <tbody></tbody>
   </table>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { firebaseConfig } from "./firebase.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAJe1ZqvaNG0y04PCU3PkUU2XebbI86lt4",
-    authDomain: "ticket-helpdesk-a2dd8.firebaseapp.com",
-    projectId: "ticket-helpdesk-a2dd8",
-    storageBucket: "ticket-helpdesk-a2dd8.firebasestorage.app",
-    messagingSenderId: "464766886414",
-    appId: "1:464766886414:web:cd689936d78102b04b525f",
-    measurementId: "G-9N8M2GXWMD"
-  };
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+  import {
+    getFirestore, collection, getDocs
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function loadTickets() {
-    const tbody = document.getElementById("ticketList");
-    tbody.innerHTML = "<tr><td colspan='5'>A carregar...</td></tr>";
+  async function carregarTickets() {
+    const tbody = document.querySelector("#tabelaTickets tbody");
+    tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
 
     const querySnapshot = await getDocs(collection(db, "tickets"));
     tbody.innerHTML = "";
 
-    querySnapshot.forEach((doc)=>{
+    querySnapshot.forEach((doc) => {
       const t = doc.data();
 
-      const statusClass =
+      const estadoClasse =
         t.estado === "Aberto" ? "aberto" :
         t.estado === "Em andamento" ? "andamento" :
         "resolvido";
 
-      tbody.innerHTML += `
+      const linha = `
         <tr>
+          <td>${t.id}</td>
           <td>${t.nome}</td>
           <td>${t.categoria}</td>
           <td>${t.prioridade}</td>
-          <td><span class="estado ${statusClass}">${t.estado}</span></td>
+          <td><span class="estado ${estadoClasse}">${t.estado}</span></td>
           <td>${t.descricao}</td>
         </tr>
       `;
+
+      tbody.innerHTML += linha;
     });
   }
 
-  loadTickets();
+  carregarTickets();
 </script>
 
 </body>
