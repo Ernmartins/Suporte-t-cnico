@@ -1,25 +1,42 @@
 /* ==============================
-   ESTILO GERAL
+   TEMA DARK MODERNO - SMARTHELP
+=================================*/
+
+:root {
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --blue: #38bdf8;
+  --blue-light: #7dd3fc;
+  --text-light: #f1f5f9;
+  --text-muted: #94a3b8;
+  --success: #4ade80;
+  --warning: #facc15;
+  --danger: #f87171;
+}
+
+/* ==============================
+   BODY
 =================================*/
 
 body {
   margin: 0;
   font-family: "Segoe UI", Arial, sans-serif;
-  background: #eef2f5;
+  background: var(--bg-dark);
+  color: var(--text-light);
 }
 
 /* ==============================
-   CONTAINER PRINCIPAL
+   CONTAINER
 =================================*/
 
 .container {
   width: 95%;
   max-width: 650px;
   margin: 40px auto;
-  background: white;
+  background: var(--bg-card);
   padding: 35px;
   border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
   animation: fadeIn 0.8s ease-in-out;
 }
 
@@ -29,20 +46,24 @@ body {
 }
 
 /* ==============================
-   TÍTULOS E TEXTOS
+   TÍTULOS
 =================================*/
 
 h1, h2 {
   text-align: center;
   font-weight: 700;
-  color: #1a73e8;
+  color: var(--blue);
 }
+
+/* ==============================
+   SUBTÍTULOS
+=================================*/
 
 .subtitle {
   text-align: center;
   margin-top: -10px;
   margin-bottom: 25px;
-  color: #555;
+  color: var(--text-muted);
   font-size: 15px;
 }
 
@@ -60,17 +81,18 @@ input, select, textarea {
   width: 100%;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #334155;
   margin-top: 6px;
   font-size: 15px;
   transition: 0.3s;
-  background: #fafafa;
+  background: #0f172a;
+  color: var(--text-light);
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: #1a73e8;
+  border-color: var(--blue);
   outline: none;
-  box-shadow: 0 0 6px rgba(26,115,232,0.3);
+  box-shadow: 0 0 6px rgba(56,189,248,0.6);
 }
 
 textarea {
@@ -86,19 +108,19 @@ button {
   width: 100%;
   margin-top: 30px;
   padding: 15px;
-  background: #1a73e8;
-  color: white;
+  background: var(--blue);
+  color: #0f172a;
   border: none;
   border-radius: 12px;
   font-size: 17px;
   cursor: pointer;
   transition: 0.3s;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 button:hover {
-  background: #155dc1;
-  transform: scale(1.02);
+  background: var(--blue-light);
+  transform: scale(1.03);
 }
 
 /* ==============================
@@ -106,13 +128,13 @@ button:hover {
 =================================*/
 
 header {
-  background: #1a73e8;
-  color: white;
+  background: var(--bg-card);
+  color: var(--blue-light);
   padding: 20px;
   text-align: center;
   font-size: 24px;
   font-weight: bold;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  border-bottom: 2px solid var(--blue);
 }
 
 /* ==============================
@@ -123,22 +145,23 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  background: var(--bg-card);
 }
 
 th, td {
   padding: 14px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #334155;
   font-size: 15px;
 }
 
 th {
-  background: #f2f6fc;
-  color: #1a73e8;
+  background: #1e293b;
+  color: var(--blue-light);
   font-weight: bold;
 }
 
 tr:hover {
-  background: #f9fbff;
+  background: #0f172a;
 }
 
 /* ==============================
@@ -152,17 +175,16 @@ tr:hover {
 }
 
 .aberto {
-  background: #ffdede;
-  color: #b30000;
+  background: var(--danger);
+  color: #0f172a;
 }
 
 .andamento {
-  background: #fff4cc;
-  color: #aa7a00;
+  background: var(--warning);
+  color: #0f172a;
 }
 
 .resolvido {
-  background: #d7ffd9;
-  color: #006b0b;
+  background: var(--success);
+  color: #0f172a;
 }
-
