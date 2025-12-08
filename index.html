@@ -5,11 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartHelp – Abrir Ticket</title>
 
-  <!-- CSS global -->
+  <!-- Estilo Global -->
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* ESTILO EXCLUSIVO DO FORMULÁRIO */
+    /* ESTILO EXCLUSIVO DO FORMULÁRIO DO INDEX */
+
+    body {
+      /* fundo escuro igual ao tema do CSS */
+      background: #0f172a;
+    }
+
     .form-wrapper {
       background: var(--bg-card);
       padding: 40px;
@@ -39,6 +45,7 @@
       height: 200px !important;
       line-height: 1.5;
       padding: 16px;
+      white-space: pre-line;
     }
 
     button {
@@ -47,44 +54,35 @@
       padding: 18px;
     }
 
-    /* MENU SUPERIOR */
-    .menu {
-      width: 100%;
-      padding: 20px;
-      background: var(--bg-card);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    .links-topo {
       display: flex;
-      justify-content: center;
-      gap: 20px;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-bottom: 15px;
     }
 
-    .menu a {
-      padding: 12px 20px;
-      background: var(--blue);
-      color: white;
+    .links-topo a {
+      font-size: 13px;
       text-decoration: none;
-      border-radius: 10px;
-      font-weight: 600;
-      transition: 0.2s;
+      color: var(--blue-light);
+      opacity: 0.9;
     }
 
-    .menu a:hover {
-      background: #0d5ec7;
+    .links-topo a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 
 <body>
 
-<!-- MENU DE NAVEGAÇÃO -->
-<div class="menu">
-  <a href="index.html">Abrir Ticket</a>
-  <a href="consultar-ticket.html">Consultar Ticket</a>
-  <a href="login.html">Login Técnico</a>
-  <a href="dashboard.html">Dashboard</a>
-</div>
-
 <div class="form-wrapper">
+  <div class="links-topo">
+    <a href="consultar-ticket.html">🔍 Consultar ticket</a>
+    <a href="painel.html">📋 Painel técnico</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+  </div>
+
   <h1>📨 Abrir Ticket de Suporte</h1>
   <p class="subtitle">Explique-nos o problema com detalhe para podermos ajudar rapidamente</p>
 
@@ -118,48 +116,68 @@
     </select>
 
     <label>Descrição do Problema</label>
-    <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe..." required></textarea>
+    <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe possível.
+Exemplos:
+• O computador não liga
+• A impressora não imprime
+• Não consigo aceder ao email
+• Internet lenta ou sem ligação" required></textarea>
 
     <button type="submit">Enviar Ticket</button>
   </form>
 </div>
 
-<!-- Firebase Script -->
+<!-- Firebase + Envio do Formulário -->
 <script type="module">
   import { firebaseConfig } from "./firebase.js";
 
-  import {
-    initializeApp
+  import { 
+    initializeApp 
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
   import {
     getFirestore, collection, addDoc, getDocs
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+  // Inicializar Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  document.getElementById("ticketForm").addEventListener("submit", async (e) => {
+  // Referências aos campos (para evitar erros de variáveis não definidas)
+  const form = document.getElementById("ticketForm");
+  const nomeInput = document.getElementById("nome");
+  const emailInput = document.getElementById("email");
+  const telefoneInput = document.getElementById("telefone");
+  const categoriaInput = document.getElementById("categoria");
+  const prioridadeInput = document.getElementById("prioridade");
+  const descricaoInput = document.getElementById("descricao");
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // Buscar número atual de tickets
     const snap = await getDocs(collection(db, "tickets"));
     const total = snap.size + 1;
+
+    // Criar ID automático (ex.: TCK-0004)
     const ticketID = "TCK-" + String(total).padStart(4, "0");
 
+    // Gravar no Firestore
     await addDoc(collection(db, "tickets"), {
       id: ticketID,
-      nome: nome.value,
-      email: email.value,
-      telefone: telefone.value,
-      categoria: categoria.value,
-      prioridade: prioridade.value,
-      descricao: descricao.value,
+      nome: nomeInput.value,
+      email: emailInput.value,
+      telefone: telefoneInput.value,
+      categoria: categoriaInput.value,
+      prioridade: prioridadeInput.value,
+      descricao: descricaoInput.value,
       estado: "Aberto",
       data: new Date()
     });
 
     alert("✅ Ticket enviado com sucesso!\n\nID do Ticket: " + ticketID);
-    document.getElementById("ticketForm").reset();
+
+    form.reset();
   });
 </script>
 
