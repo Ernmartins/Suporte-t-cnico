@@ -8,9 +8,17 @@
 </head>
 
 <body>
+
+<nav class="top-nav">
+  <a href="index.html">Abrir ticket</a>
+  <a href="consultar-ticket.html">Consultar ticket</a>
+  <a href="login.html">Login técnico</a>
+  <a href="painel.html">Painel técnico</a>
+  <a href="dashboard.html">Dashboard</a>
+</nav>
+
 <header>
   📋 SmartHelp – Painel Técnico
-  <button id="btnLogout" style="float:right; margin-top:-5px;">Sair</button>
 </header>
 
 <div class="container">
@@ -39,35 +47,12 @@
     getFirestore, collection, getDocs,
     doc, updateDoc
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-  import {
-    getAuth,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
   // 🔧 Firebase
-  const app  = initializeApp(firebaseConfig);
-  const db   = getFirestore(app);
-  const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
 
-  const tbody     = document.getElementById("ticketList");
-  const btnLogout = document.getElementById("btnLogout");
-
-  // 🔐 Proteger painel: só entra se estiver autenticado
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      // não autenticado → volta ao login
-      window.location.href = "login.html";
-    } else {
-      carregarTickets();
-    }
-  });
-
-  // 🚪 Logout
-  btnLogout.addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "login.html";
-  });
+  const tbody = document.getElementById("ticketList");
 
   // 📥 Carregar tickets
   async function carregarTickets() {
@@ -77,13 +62,14 @@
     tbody.innerHTML = "";
 
     snap.forEach(d => {
-      const t = d.data();
+      const t     = d.data();
       const idDoc = d.id;
 
       const estadoClasse =
-        t.estado === "Aberto" ? "aberto" :
-        t.estado === "Em andamento" ? "andamento" :
-        "resolvido";
+        t.estado === "Aberto"        ? "aberto" :
+        t.estado === "Em andamento"  ? "andamento" :
+        t.estado === "Fechado"       ? "resolvido" :
+        "aberto";
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -98,7 +84,7 @@
           <select class="estadoSelect" data-doc="${idDoc}">
             <option value="Aberto" ${t.estado === "Aberto" ? "selected" : ""}>Aberto</option>
             <option value="Em andamento" ${t.estado === "Em andamento" ? "selected" : ""}>Em andamento</option>
-            <option value="Fechado" ${t.estado === "Fechado" || t.estado === "Resolvido" ? "selected" : ""}>Fechado</option>
+            <option value="Fechado" ${t.estado === "Fechado" ? "selected" : ""}>Fechado</option>
           </select>
           <button class="btnSalvar" data-doc="${idDoc}">Guardar</button>
         </td>
@@ -120,6 +106,8 @@
       });
     });
   }
+
+  carregarTickets();
 </script>
 
 </body>
