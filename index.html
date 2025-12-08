@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartHelp – Abrir Ticket</title>
 
-  <!-- Estilo Global -->
+  <!-- CSS global -->
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* ESTILO EXCLUSIVO DO FORMULÁRIO DO INDEX */
-
+    /* ESTILO EXCLUSIVO DO FORMULÁRIO */
     .form-wrapper {
       background: var(--bg-card);
       padding: 40px;
@@ -48,36 +47,42 @@
       padding: 18px;
     }
 
-    /* LINKS PARA OUTRAS PÁGINAS */
-
-    .nav-links {
-      margin-top: 30px;
-      text-align: center;
+    /* MENU SUPERIOR */
+    .menu {
+      width: 100%;
+      padding: 20px;
+      background: var(--bg-card);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
       justify-content: center;
+      gap: 20px;
     }
 
-    .nav-links a {
-      text-decoration: none;
-      padding: 10px 18px;
-      border-radius: 999px;
-      border: 1px solid var(--blue);
-      color: var(--blue-light);
-      font-size: 14px;
-      transition: 0.3s;
-    }
-
-    .nav-links a:hover {
+    .menu a {
+      padding: 12px 20px;
       background: var(--blue);
-      color: #0f172a;
-      transform: scale(1.03);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .menu a:hover {
+      background: #0d5ec7;
     }
   </style>
 </head>
 
 <body>
+
+<!-- MENU DE NAVEGAÇÃO -->
+<div class="menu">
+  <a href="index.html">Abrir Ticket</a>
+  <a href="consultar-ticket.html">Consultar Ticket</a>
+  <a href="login.html">Login Técnico</a>
+  <a href="dashboard.html">Dashboard</a>
+</div>
 
 <div class="form-wrapper">
   <h1>📨 Abrir Ticket de Suporte</h1>
@@ -113,30 +118,18 @@
     </select>
 
     <label>Descrição do Problema</label>
-    <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe possível.
-Exemplos:
-• O computador não liga
-• A impressora não imprime
-• Não consigo aceder ao email
-• Internet lenta ou sem ligação" required></textarea>
+    <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe..." required></textarea>
 
     <button type="submit">Enviar Ticket</button>
   </form>
-
-  <!-- BOTÕES PARA OUTRAS PÁGINAS DO SISTEMA -->
-  <div class="nav-links">
-    <a href="consultar-ticket.html">🔍 Consultar estado do ticket</a>
-    <a href="admin.html">🛠️ Painel do técnico</a>
-    <a href="dashboard.html">📊 Dashboard de tickets</a>
-  </div>
 </div>
 
-<!-- Firebase + Envio do Formulário -->
+<!-- Firebase Script -->
 <script type="module">
   import { firebaseConfig } from "./firebase.js";
 
-  import { 
-    initializeApp 
+  import {
+    initializeApp
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
   import {
@@ -166,7 +159,6 @@ Exemplos:
     });
 
     alert("✅ Ticket enviado com sucesso!\n\nID do Ticket: " + ticketID);
-
     document.getElementById("ticketForm").reset();
   });
 </script>
