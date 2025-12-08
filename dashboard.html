@@ -2,99 +2,42 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>Painel Técnico</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-<header>📊 Dashboard de Tickets</header>
+
+<header>
+  📋 Painel Técnico
+  <button onclick="logout()" class="logout-btn">Logout</button>
+</header>
 
 <div class="container">
-  <h2>Tickets por Categoria</h2>
-  <canvas id="catChart"></canvas>
+  <h2>Menu</h2>
+  <a class="btn" href="admin.html">📑 Gerir Tickets</a>
+  <a class="btn" href="dashboard.html">📊 Dashboard</a>
 </div>
-
-<div class="container">
-  <h2>Tickets por Prioridade</h2>
-  <canvas id="prioChart"></canvas>
-</div>
-
-<div class="container">
-  <h2>Tickets por Estado</h2>
-  <canvas id="stateChart"></canvas>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script type="module">
   import { firebaseConfig } from "./firebase.js";
-
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { initializeApp } 
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-  async function gerarDashboard() {
-    const snap = await getDocs(collection(db, "tickets"));
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
 
-    let categorias = {};
-    let prioridades = {};
-    let estados = {};
-
-    snap.forEach(d => {
-      let t = d.data();
-
-      // Contagem por categoria
-      categorias[t.categoria] = (categorias[t.categoria] || 0) + 1;
-
-      // Contagem por prioridade
-      prioridades[t.prioridade] = (prioridades[t.prioridade] || 0) + 1;
-
-      // Contagem por estado
-      estados[t.estado] = (estados[t.estado] || 0) + 1;
-    });
-
-    // Gráfico por Categoria
-    new Chart(catChart, {
-      type: "bar",
-      data: {
-        labels: Object.keys(categorias),
-        datasets: [{
-          label: "Tickets",
-          data: Object.values(categorias),
-          backgroundColor: "#38bdf8"
-        }]
-      }
-    });
-
-    // Gráfico por Prioridade
-    new Chart(prioChart, {
-      type: "pie",
-      data: {
-        labels: Object.keys(prioridades),
-        datasets: [{
-          data: Object.values(prioridades),
-          backgroundColor: ["#4ade80","#facc15","#f97316","#a855f7"]
-        }]
-      }
-    });
-
-    // 🔹 NOVO: Gráfico por Estado
-    new Chart(stateChart, {
-      type: "bar",
-      data: {
-        labels: Object.keys(estados),
-        datasets: [{
-          label: "Tickets",
-          data: Object.values(estados),
-          backgroundColor: ["#f87171", "#facc15", "#4ade80"]
-        }]
-      }
-    });
+  window.logout = function () {
+    signOut(auth);
   }
-
-  gerarDashboard();
 </script>
 
 </body>
