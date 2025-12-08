@@ -2,15 +2,21 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Painel Técnico – SmartHelp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartHelp – Painel Técnico</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-<header>📋 Painel do Técnico</header>
+<header>
+  📋 SmartHelp – Painel Técnico
+  <button id="btnLogout" style="float:right; margin-top:-5px;">Sair</button>
+</header>
 
 <div class="container">
-  <table id="lista">
+  <h2>Tickets Recebidos</h2>
+
+  <table>
     <thead>
       <tr>
         <th>ID</th>
@@ -21,53 +27,99 @@
         <th>Ação</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="ticketList"></tbody>
   </table>
 </div>
 
 <script type="module">
   import { firebaseConfig } from "./firebase.js";
 
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { 
-    initializeApp 
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-
-  import { 
-    getFirestore, collection, getDocs, updateDoc, doc 
+    getFirestore, collection, getDocs,
+    doc, updateDoc
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  // 🔧 Firebase
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
 
-  async function carregar() {
+  const tbody     = document.getElementById("ticketList");
+  const btnLogout = document.getElementById("btnLogout");
+
+  // 🔐 Proteger painel: só entra se estiver autenticado
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // não autenticado → volta ao login
+      window.location.href = "login.html";
+    } else {
+      carregarTickets();
+    }
+  });
+
+  // 🚪 Logout
+  btnLogout.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "login.html";
+  });
+
+  // 📥 Carregar tickets
+  async function carregarTickets() {
+    tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
+
     const snap = await getDocs(collection(db, "tickets"));
-    let html = "";
+    tbody.innerHTML = "";
 
     snap.forEach(d => {
       const t = d.data();
-      html += `
-        <tr>
-          <td>${t.id}</td>
-          <td>${t.nome}</td>
-          <td>${t.categoria}</td>
-          <td>${t.prioridade}</td>
-          <td>${t.estado}</td>
-          <td>
-            <button onclick="mudarEstado('${d.id}', 'Resolvido')">Resolvido</button>
-            <button onclick="mudarEstado('${d.id}', 'Em andamento')">Em andamento</button>
-          </td>
-        </tr>`;
+      const idDoc = d.id;
+
+      const estadoClasse =
+        t.estado === "Aberto" ? "aberto" :
+        t.estado === "Em andamento" ? "andamento" :
+        "resolvido";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${t.id || "(sem ID)"}</td>
+        <td>${t.nome}</td>
+        <td>${t.categoria}</td>
+        <td>${t.prioridade}</td>
+        <td>
+          <span class="estado ${estadoClasse}">${t.estado}</span>
+        </td>
+        <td>
+          <select class="estadoSelect" data-doc="${idDoc}">
+            <option value="Aberto" ${t.estado === "Aberto" ? "selected" : ""}>Aberto</option>
+            <option value="Em andamento" ${t.estado === "Em andamento" ? "selected" : ""}>Em andamento</option>
+            <option value="Fechado" ${t.estado === "Fechado" || t.estado === "Resolvido" ? "selected" : ""}>Fechado</option>
+          </select>
+          <button class="btnSalvar" data-doc="${idDoc}">Guardar</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
     });
 
-    document.querySelector("#lista tbody").innerHTML = html;
-  }
+    // Ligar eventos aos botões "Guardar"
+    document.querySelectorAll(".btnSalvar").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const idDoc = btn.getAttribute("data-doc");
+        const select = document.querySelector(`.estadoSelect[data-doc="${idDoc}"]`);
+        const novoEstado = select.value;
 
-  window.mudarEstado = async function (id, novoEstado) {
-    await updateDoc(doc(db, "tickets", id), { estado: novoEstado });
-    carregar();
-  }
+        await updateDoc(doc(db, "tickets", idDoc), { estado: novoEstado });
 
-  carregar();
+        alert("Estado do ticket atualizado para: " + novoEstado);
+        carregarTickets(); // refrescar tabela
+      });
+    });
+  }
 </script>
 
 </body>
