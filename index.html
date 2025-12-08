@@ -4,50 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartHelp – Abrir Ticket</title>
-
-  <!-- Estilo Global -->
   <link rel="stylesheet" href="style.css">
-
-  <style>
-    /* ESTILO EXCLUSIVO DO FORMULÁRIO DO INDEX */
-
-    .form-wrapper {
-      background: var(--bg-card);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.45);
-      max-width: 800px;
-      margin: 50px auto;
-      animation: fadeIn 0.8s ease-in-out;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--blue);
-    }
-
-    .subtitle {
-      text-align: center;
-      margin-bottom: 35px;
-      font-size: 16px;
-      color: var(--text-muted);
-    }
-
-    textarea {
-      height: 200px !important;
-      line-height: 1.5;
-      padding: 16px;
-    }
-
-    button {
-      margin-top: 35px;
-      font-size: 18px;
-      padding: 18px;
-    }
-  </style>
 </head>
 
 <body>
@@ -57,7 +14,6 @@
   <p class="subtitle">Explique-nos o problema com detalhe para podermos ajudar rapidamente</p>
 
   <form id="ticketForm">
-
     <label>Nome</label>
     <input type="text" id="nome" placeholder="O seu nome completo" required>
 
@@ -86,72 +42,14 @@
     </select>
 
     <label>Descrição do Problema</label>
-    <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe possível.
-Exemplos:
-• O computador não liga
-• A impressora não imprime
-• Não consigo aceder ao email
-• Internet lenta ou sem ligação" required></textarea>
+    <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe possível." required></textarea>
 
     <button type="submit">Enviar Ticket</button>
   </form>
-</div>
 
-<!-- Firebase + Envio do Formulário -->
-<script type="module">
-  import { firebaseConfig } from "./firebase.js";
+  <hr style="margin:30px 0;">
 
-  import { 
-    initializeApp 
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-
-  import {
-    getFirestore, collection, addDoc, getDocs
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-  // Inicializar Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // Esperar o DOM carregar
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("ticketForm");
-    if (!form) {
-      console.error("Formulário #ticketForm não encontrado.");
-      return;
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      try {
-        // 1) Contar tickets atuais para gerar ID
-        const snap = await getDocs(collection(db, "tickets"));
-        const total = snap.size + 1;
-        const ticketID = "TCK-" + String(total).padStart(4, "0");
-
-        // 2) Guardar no Firestore
-        await addDoc(collection(db, "tickets"), {
-          id: ticketID,
-          nome: document.getElementById("nome").value,
-          email: document.getElementById("email").value,
-          telefone: document.getElementById("telefone").value,
-          categoria: document.getElementById("categoria").value,
-          prioridade: document.getElementById("prioridade").value,
-          descricao: document.getElementById("descricao").value,
-          estado: "Aberto",
-          data: new Date()
-        });
-
-        alert("✅ Ticket enviado com sucesso!\n\nID do Ticket: " + ticketID);
-        form.reset();
-      } catch (err) {
-        console.error(err);
-        alert("Ocorreu um erro ao enviar o ticket. Tente novamente.");
-      }
-    });
-  });
-</script>
-
-</body>
-</html>
+  <!-- atalhos para outras páginas -->
+  <button onclick="location.href='consultar-ticket.html'">🔍 Consultar ticket por ID</button>
+  <button onclick="location.href='login.html'">👨‍🔧 Área do técnico</button>
+</
