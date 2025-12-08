@@ -4,132 +4,114 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartHelp – Abrir Ticket</title>
-
   <link rel="stylesheet" href="style.css">
-
-  <style>
-    .form-wrapper {
-      background: var(--bg-card);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-      max-width: 800px;
-      margin: 50px auto;
-    }
-
-    textarea {
-      height: 200px !important;
-      line-height: 1.5;
-      padding: 16px;
-    }
-  </style>
 </head>
 
 <body>
 
-<div class="form-wrapper">
-  <h1>📨 Abrir Ticket de Suporte</h1>
-  <p class="subtitle">Explique-nos o problema com detalhe para podermos ajudar rapidamente</p>
+  <!-- MENU GLOBAL -->
+  <nav class="top-nav">
+    <a href="index.html">📨 Abrir Ticket</a>
+    <a href="consultar-ticket.html">🔍 Consultar Ticket</a>
+    <a href="login.html">👨‍💻 Painel Técnico</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+  </nav>
 
-  <form id="ticketForm">
+  <div class="form-wrapper">
+    <h1>📨 Abrir Ticket de Suporte</h1>
+    <p class="subtitle">Explique o problema com detalhe para podermos ajudar rapidamente.</p>
 
-    <label>Nome</label>
-    <input type="text" id="nome" placeholder="O seu nome completo" required>
+    <form id="ticketForm">
+      <label>Nome</label>
+      <input type="text" id="nome" placeholder="O seu nome completo" required>
 
-    <label>Email</label>
-    <input type="email" id="email" placeholder="exemplo@empresa.com" required>
+      <label>Email</label>
+      <input type="email" id="email" placeholder="exemplo@empresa.com" required>
 
-    <label>Telefone</label>
-    <input type="text" id="telefone" placeholder="Contacto (opcional)">
+      <label>Telefone</label>
+      <input type="text" id="telefone" placeholder="Contacto (opcional)">
 
-    <label>Tipo de Pedido</label>
-    <select id="categoria" required>
-      <option value="">Selecione...</option>
-      <option>Erro técnico</option>
-      <option>Pedido administrativo</option>
-      <option>Falha de equipamento</option>
-      <option>Outro</option>
-    </select>
+      <label>Tipo de Pedido</label>
+      <select id="categoria" required>
+        <option value="">Selecione...</option>
+        <option>Erro técnico</option>
+        <option>Pedido administrativo</option>
+        <option>Falha de equipamento</option>
+        <option>Outro</option>
+      </select>
 
-    <label>Prioridade</label>
-    <select id="prioridade" required>
-      <option value="">Selecione...</option>
-      <option>Baixa</option>
-      <option>Média</option>
-      <option>Alta</option>
-      <option>Urgente</option>
-    </select>
+      <label>Prioridade</label>
+      <select id="prioridade" required>
+        <option value="">Selecione...</option>
+        <option>Baixa</option>
+        <option>Média</option>
+        <option>Alta</option>
+        <option>Urgente</option>
+      </select>
 
-    <label>Descrição do Problema</label>
-    <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe possível.
+      <label>Descrição do Problema</label>
+      <textarea id="descricao" placeholder="Descreva o problema com o máximo de detalhe possível.
 Exemplos:
 • O computador não liga
 • A impressora não imprime
 • Não consigo aceder ao email
 • Internet lenta ou sem ligação" required></textarea>
 
-    <button type="submit">Enviar Ticket</button>
-  </form>
-
-  <!-- links para as outras páginas -->
-  <div class="nav-links">
-    <a href="consultar-ticket.html"><button type="button">🔍 Consultar Ticket</button></a>
-    <a href="login.html"><button type="button">🔐 Login Técnico</button></a>
-    <a href="dashboard.html"><button type="button">📊 Dashboard</button></a>
+      <button type="submit">Enviar Ticket</button>
+    </form>
   </div>
-</div>
 
-<!-- Firebase + Envio do Formulário -->
-<script type="module">
-  import { firebaseConfig } from "./firebase.js";
+  <!-- Firebase + Envio do Formulário -->
+  <script type="module">
+    import { firebaseConfig } from "./firebase.js";
 
-  import { 
-    initializeApp 
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { 
+      initializeApp 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
-  import {
-    getFirestore, collection, addDoc, getDocs
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import {
+      getFirestore, collection, addDoc, getDocs
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("ticketForm");
-    if (!form) {
-      console.error("Formulário #ticketForm não encontrado.");
-      return;
-    }
+    // Esperar DOM pronto
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("ticketForm");
+      if (!form) return;
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-      try {
-        const snap = await getDocs(collection(db, "tickets"));
-        const total = snap.size + 1;
-        const ticketID = "TCK-" + String(total).padStart(4, "0");
+        try {
+          // Contar tickets para gerar ID “humano”
+          const snap  = await getDocs(collection(db, "tickets"));
+          const total = snap.size + 1;
+          const ticketID = "TCK-" + String(total).padStart(4, "0");
 
-        await addDoc(collection(db, "tickets"), {
-          id: ticketID,
-          nome: document.getElementById("nome").value,
-          email: document.getElementById("email").value,
-          telefone: document.getElementById("telefone").value,
-          categoria: document.getElementById("categoria").value,
-          prioridade: document.getElementById("prioridade").value,
-          descricao: document.getElementById("descricao").value,
-          estado: "Aberto",
-          data: new Date()
-        });
+          await addDoc(collection(db, "tickets"), {
+            id: ticketID,
+            nome: document.getElementById("nome").value,
+            email: document.getElementById("email").value,
+            telefone: document.getElementById("telefone").value,
+            categoria: document.getElementById("categoria").value,
+            prioridade: document.getElementById("prioridade").value,
+            descricao: document.getElementById("descricao").value,
+            estado: "Aberto",
+            data: new Date()
+          });
 
-        alert("✅ Ticket enviado com sucesso!\n\nID do Ticket: " + ticketID);
-        form.reset();
-      } catch (err) {
-        console.error(err);
-        alert("Ocorreu um erro ao enviar o ticket. Tente novamente.");
-      }
+          alert("✅ Ticket enviado com sucesso!\n\nID do Ticket: " + ticketID);
+          form.reset();
+        } catch (err) {
+          console.error(err);
+          alert("Ocorreu um erro ao enviar o ticket. Tente novamente.");
+        }
+      });
     });
-  });
-</script>
+  </script>
 
 </body>
 </html>
