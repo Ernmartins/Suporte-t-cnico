@@ -3,108 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Técnico — Gestão de Tickets</title>
+  <title>SmartHelp – Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>📋 Painel Técnico — Gestão de Tickets</header>
+<nav class="top-nav">
+  <a href="index.html">Abrir ticket</a>
+  <a href="consultar-ticket.html">Consultar ticket</a>
+  <a href="login.html">Login técnico</a>
+  <a href="painel.html">Painel técnico</a>
+  <a href="dashboard.html">Dashboard</a>
+</nav>
+
+<header>📊 Dashboard de Tickets</header>
 
 <div class="container">
-  <h2>Lista de Tickets</h2>
-
-  <table id="tabelaTickets">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Categoria</th>
-        <th>Prioridade</th>
-        <th>Estado</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
+  <h2>Tickets por Categoria</h2>
+  <canvas id="catChart"></canvas>
 </div>
+
+<div class="container">
+  <h2>Tickets por Prioridade</h2>
+  <canvas id="prioChart"></canvas>
+</div>
+
+<div class="container">
+  <h2>Tickets por Estado</h2>
+  <canvas id="estadoChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script type="module">
   import { firebaseConfig } from "./firebase.js";
 
-  import {
-    initializeApp
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  import {
-    getFirestore, collection, getDocs, doc, updateDoc
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-  // Inicializar Firebase
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const db  = getFirestore(app);
 
-  async function carregarTickets() {
-    const tbody = document.querySelector("#tabelaTickets tbody");
-    tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
+  async function gerarDashboard() {
+    const snap = await getDocs(collection(db, "tickets"));
 
-    const querySnapshot = await getDocs(collection(db, "tickets"));
+    let categorias  = {};
+    let prioridades = {};
+    let estados     = {};
 
-    tbody.innerHTML = "";
+    snap.forEach(d => {
+      const t = d.data();
 
-    querySnapshot.forEach((tDoc) => {
-      const t = tDoc.data();
+      categorias[t.categoria]  = (categorias[t.categoria]  || 0) + 1;
+      prioridades[t.prioridade] = (prioridades[t.prioridade] || 0) + 1;
+      estados[t.estado]        = (estados[t.estado]        || 0) + 1;
+    });
 
-      tbody.innerHTML += `
-        <tr>
-          <td>${t.id}</td>
-          <td>${t.nome}</td>
-          <td>${t.categoria}</td>
-          <td>${t.prioridade}</td>
-          <td><span class="estado ${t.estado === 'Aberto' ? 'aberto' : 'resolvido'}">${t.estado}</span></td>
-          <td>
-            ${t.estado !== "Fechado"
-              ? `<button class="btn-close" onclick="fecharTicket('${tDoc.id}')">Fechar</button>`
-              : "—"}
-          </td>
-        </tr>`;
+    // Categoria
+    new Chart(document.getElementById("catChart"), {
+      type: "bar",
+      data: {
+        labels: Object.keys(categorias),
+        datasets: [{
+          label: "Tickets",
+          data: Object.values(categorias),
+          backgroundColor: "#1a73e8"
+        }]
+      }
+    });
+
+    // Prioridade
+    new Chart(document.getElementById("prioChart"), {
+      type: "pie",
+      data: {
+        labels: Object.keys(prioridades),
+        datasets: [{
+          data: Object.values(prioridades),
+          backgroundColor: ["#4CAF50","#FFC107","#FF5722","#9C27B0"]
+        }]
+      }
+    });
+
+    // Estado
+    new Chart(document.getElementById("estadoChart"), {
+      type: "doughnut",
+      data: {
+        labels: Object.keys(estados),
+        datasets: [{
+          data: Object.values(estados),
+          backgroundColor: ["#4ade80","#facc15","#f87171","#60a5fa"]
+        }]
+      }
     });
   }
 
-  // FECHAR TICKET
-  window.fecharTicket = async function(idFirebase) {
-    if (!confirm("Tem a certeza que deseja fechar este ticket?")) return;
-
-    const ref = doc(db, "tickets", idFirebase);
-
-    await updateDoc(ref, {
-      estado: "Fechado"
-    });
-
-    alert("Ticket fechado com sucesso!");
-
-    carregarTickets(); // atualizar tabela
-  };
-
-  carregarTickets();
+  gerarDashboard();
 </script>
-
-<style>
-  .btn-close {
-    padding: 6px 12px;
-    background: #f87171;
-    border: none;
-    color: #0f172a;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .btn-close:hover {
-    background: #fca5a5;
-  }
-</style>
 
 </body>
 </html>
